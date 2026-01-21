@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #09090b;
+  --foreground: #fafafa;
 }
 
 @theme inline {
@@ -14,13 +14,166 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #09090b;
+    --foreground: #fafafa;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Landing page motion */
+@keyframes landing-gradient-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes landing-orb-drift-a {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.35;
+  }
+  50% {
+    transform: translate(8%, 6%) scale(1.08);
+    opacity: 0.55;
+  }
+}
+
+@keyframes landing-orb-drift-b {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.25;
+  }
+  50% {
+    transform: translate(-10%, -8%) scale(1.12);
+    opacity: 0.45;
+  }
+}
+
+@keyframes landing-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes landing-float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes landing-marquee-x {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.landing-hero-bg {
+  background: radial-gradient(ellipse 80% 60% at 50% -30%, rgba(251, 146, 60, 0.18), transparent),
+    radial-gradient(ellipse 60% 50% at 100% 50%, rgba(56, 189, 248, 0.08), transparent),
+    radial-gradient(ellipse 50% 40% at 0% 80%, rgba(251, 191, 36, 0.06), transparent);
+  background-size: 120% 120%;
+  animation: landing-gradient-shift 18s ease-in-out infinite;
+}
+
+.landing-orb-a {
+  animation: landing-orb-drift-a 14s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-orb-a,
+  .landing-orb-b {
+    animation: none;
+  }
+}
+
+.landing-orb-b {
+  animation: landing-orb-drift-b 16s ease-in-out infinite;
+}
+
+.landing-fade-in {
+  animation: landing-fade-up 0.9s ease-out both;
+}
+
+.landing-fade-in-delay-1 {
+  animation-delay: 0.12s;
+}
+.landing-fade-in-delay-2 {
+  animation-delay: 0.24s;
+}
+.landing-fade-in-delay-3 {
+  animation-delay: 0.36s;
+}
+.landing-fade-in-delay-4 {
+  animation-delay: 0.48s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-fade-in,
+  .landing-fade-in-delay-1,
+  .landing-fade-in-delay-2,
+  .landing-fade-in-delay-3,
+  .landing-fade-in-delay-4 {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.landing-float-card {
+  animation: landing-float-soft 5s ease-in-out infinite;
+}
+
+.landing-float-card:nth-child(2) {
+  animation-delay: 0.4s;
+}
+.landing-float-card:nth-child(3) {
+  animation-delay: 0.8s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-float-card {
+    animation: none;
+  }
+}
+
+.landing-marquee {
+  display: flex;
+  width: max-content;
+  animation: landing-marquee-x 45s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-marquee {
+    animation: none;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    max-width: 72rem;
+    margin-left: auto;
+    margin-right: auto;
+    row-gap: 1rem;
+  }
 }
