@@ -1,6 +1,20 @@
-import { clerkMiddleware } from '@clerk/nextjs/server';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { NextResponse } from 'next/server';
 
-export default clerkMiddleware();
+/** Only preparation flows require a session; marketing home and APIs stay reachable. */
+const isPreparationRoute = createRouteMatcher(['/preparation(.*)']);
+
+export default clerkMiddleware(async (auth, request) => {
+  const { userId } = await auth();
+
+  if (userId && request.nextUrl.pathname === '/') {
+    return NextResponse.redirect(new URL('/preparation', request.url));
+  }
+
+  if (isPreparationRoute(request)) {
+    await auth.protect();
+  }
+});
 
 export const config = {
   matcher: [
