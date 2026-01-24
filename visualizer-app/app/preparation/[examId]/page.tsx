@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getExam, programTierMeta, tierSummary } from "@/lib/exams-curriculum";
+import { ExamServiceTopicsGrid } from "@/components/preparation/exam-service-topics-grid";
+import { getExam, programTierMeta } from "@/lib/exams-curriculum";
 
 type Props = {
   params: Promise<{ examId: string }>;
@@ -78,37 +78,9 @@ export default async function PreparationExamGridPage({ params }: Props) {
         </li>
       </ul>
 
-      <ul className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-        {exam.services.map((s) => {
-          const cell = tierSummary[s.tier];
-          return (
-            <li key={s.serviceId}>
-              <div
-                className="flex h-full flex-col rounded-2xl border border-white/10 bg-zinc-900/60 p-4 transition hover:border-white/20"
-                title={`${s.label} — ${cell.blurb}`}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <Image
-                    src={`/aws-icons/${s.iconFile}`}
-                    alt=""
-                    width={40}
-                    height={40}
-                    className="h-10 w-10 object-contain"
-                    aria-hidden
-                  />
-                  <span
-                    className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${cell.className}`}
-                  >
-                    {cell.short}
-                  </span>
-                </div>
-                <p className="mt-3 font-mono text-sm font-semibold text-zinc-100">{s.label}</p>
-                <p className="mt-1 text-xs text-zinc-500">{s.hint}</p>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
+      <div className="mt-8">
+        <ExamServiceTopicsGrid examId={exam.id} services={exam.services} showKnowledgeTier />
+      </div>
     </div>
   );
 }
