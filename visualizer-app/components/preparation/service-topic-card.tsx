@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import type { KnowledgeTier } from "@/lib/exams-curriculum";
 import { tierSummary } from "@/lib/exams-curriculum";
+import type { SaaC03DomainId } from "@/lib/saa-c03-domains";
+import { saaC03DomainMeta } from "@/lib/saa-c03-domains";
 
 const ICON = 40;
 
@@ -18,6 +20,8 @@ export type ServiceTopicCardProps = {
   progressLoading?: boolean;
   /** When true (e.g. unsigned user), show muted copy instead of a real score */
   trackProgressUnavailable?: boolean;
+  /** SAA-C03 domain tags (shown as compact chips; index 0 is primary) */
+  saaDomainChips?: SaaC03DomainId[];
 };
 
 export function ServiceTopicCard({
@@ -29,15 +33,20 @@ export function ServiceTopicCard({
   progressLoading,
   trackProgressUnavailable,
   knowledgeTier,
+  saaDomainChips,
 }: ServiceTopicCardProps) {
   const src = `/aws-icons/${iconFile}`;
   const displayPct = trackProgressUnavailable || progressLoading ? 0 : progressPercent;
-  const tierChip = knowledgeTier ? tierSummary[knowledgeTier] : null;
+  const tierChip = knowledgeTier && !saaDomainChips?.length ? tierSummary[knowledgeTier] : null;
+  const domainTitle =
+    saaDomainChips?.length ?
+      `${label} — ${saaDomainChips.map((d) => saaC03DomainMeta[d].label).join(" · ")}`
+    : undefined;
 
   return (
     <Link
       href={href}
-      title={tierChip ? `${label} — ${tierChip.blurb}` : label}
+      title={domainTitle ?? (tierChip ? `${label} — ${tierChip.blurb}` : label)}
       className="group flex h-full flex-col rounded-2xl border border-white/10 bg-zinc-900/70 p-4 text-left backdrop-blur-sm transition hover:border-orange-500/40 hover:bg-zinc-800/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500/80"
     >
       <div className="flex items-start justify-between gap-2">
@@ -49,7 +58,19 @@ export function ServiceTopicCard({
           className="h-10 w-10 shrink-0 object-contain"
           aria-hidden
         />
-        {tierChip ? (
+        {saaDomainChips?.length ? (
+          <span className="flex shrink-0 flex-wrap justify-end gap-0.5">
+            {saaDomainChips.map((d) => (
+              <span
+                key={d}
+                title={saaC03DomainMeta[d].label}
+                className={`flex h-6 w-6 items-center justify-center rounded-full border text-[10px] font-bold ${saaC03DomainMeta[d].chipClass}`}
+              >
+                {saaC03DomainMeta[d].letter}
+              </span>
+            ))}
+          </span>
+        ) : tierChip ? (
           <span
             className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${tierChip.className}`}
           >

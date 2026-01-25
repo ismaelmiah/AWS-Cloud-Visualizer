@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { IamConceptGraph } from "@/components/preparation/iam-concept-graph";
-import { ServiceDiagramCanvas } from "@/components/preparation/service-diagram-canvas";
-import { ServiceMcqQuiz } from "@/components/preparation/service-mcq-quiz";
+import { PreparationServiceBody } from "@/components/preparation/preparation-service-body";
 import { getExam, programTierMeta } from "@/lib/exams-curriculum";
 import { getMcqsForService } from "@/lib/saa-quizzes";
 
@@ -68,14 +66,13 @@ export default async function PreparationServiceDetailPage({ params }: Props) {
         </div>
       </div>
 
-      <div className="mt-10 flex flex-col gap-10">
-        {serviceId === "iam" ? (
-          <IamConceptGraph key={`${examId}-${serviceId}-iam-viz`} />
-        ) : (
-          <ServiceDiagramCanvas key={`${examId}-${serviceId}-diagram`} examId={examId} serviceId={serviceId} />
-        )}
-        <ServiceMcqQuiz key={`${examId}-${serviceId}-quiz`} examId={examId} serviceId={serviceId} questions={questions} />
-      </div>
+      <PreparationServiceBody
+        key={`${examId}-${serviceId}-body`}
+        examId={examId}
+        serviceId={serviceId}
+        serviceLabel={service.label}
+        questions={questions}
+      />
     </div>
   );
 }

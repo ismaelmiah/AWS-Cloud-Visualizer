@@ -3,22 +3,25 @@
 const DEFAULT_LABELS = ["Users", "Edge", "App tier", "Data tier", "Management"];
 
 const LABELS: Record<string, string[]> = {
-  iam: ["IAM user", "IAM role", "IAM policy", "MFA", "Resource ARN"],
-  ec2: ["AMI", "EC2 instance", "Security group", "EBS volume", "Placement group"],
-  "elb-asg": ["Internet", "ALB / NLB", "Target group", "Auto Scaling group", "Health checks"],
-  "rds-aurora-elasticache": ["Primary DB", "Read replica", "Aurora cluster", "ElastiCache", "Subnet group"],
-  route53: ["Hosted zone", "Record set", "Routing policy", "Health check", "Resolver"],
-  s3: ["Bucket", "Object", "Versioning", "Lifecycle rule", "Bucket policy"],
-  "cloudfront-global-accelerator": ["Origin", "CloudFront", "Edge location", "Global Accelerator", "Route 53"],
-  "messaging-streaming": ["Producer", "SQS queue", "SNS topic", "Kinesis stream", "Consumer"],
-  "containers-eks": ["Task / Pod", "Service", "Cluster", "Image registry", "Load balancer"],
-  databases: ["OLTP workload", "OLAP workload", "DynamoDB", "RDS", "DMS"],
-  "data-analytics": ["Data lake (S3)", "Catalog", "Query engine", "ETL job", "Dashboard"],
-  "machine-learning": ["Training data", "Feature store", "Training job", "Model registry", "Endpoint"],
-  "observability-governance": ["Metric", "Log", "Trace", "Audit trail", "Config rule"],
-  "security-edge": ["KMS key", "Parameter Store", "Shield", "WAF ACL", "TLS"],
+  // SAA-C03 + shared ids
+  iam: ["Principal", "Policy", "Action", "Resource", "Condition"],
+  kms: ["CMK", "Data key", "Grant", "IAM + key policy", "Rotation"],
   vpc: ["VPC", "Subnet", "Route table", "IGW / NAT", "VPC endpoint"],
-  "dr-migrations": ["Source env", "Replication", "AWS landing zone", "Cutover", "DNS flip"],
+  ec2: ["AMI", "Instance", "ASG", "ALB", "EBS"],
+  lambda: ["Event source", "Function", "Concurrency", "DLQ", "Layers"],
+  "ecs-fargate": ["Task def", "Cluster", "Service", "Fargate", "ALB"],
+  s3: ["Bucket", "Object", "Policy", "Storage class", "Replication"],
+  ebs: ["Volume", "Snapshot", "AZ", "IOPS", "AMI"],
+  efs: ["Mount target", "NFS", "AZ", "Perf mode", "SG"],
+  "rds-aurora": ["Primary", "Replica", "Multi-AZ", "Subnet grp", "Params"],
+  dynamodb: ["PK/SK", "GSI", "Streams", "TTL", "Global tables"],
+  route53: ["Hosted zone", "Record", "Health check", "Failover", "Resolver"],
+  cloudfront: ["Distribution", "Behavior", "Origin", "OAC/OAI", "WAF"],
+  sqs: ["Queue", "Visibility", "DLQ", "FIFO", "Consumer"],
+  cloudwatch: ["Metric", "Alarm", "Logs", "Dashboard", "Events"],
+  // Cloud Practitioner (legacy service ids)
+  rds: ["Primary DB", "Read replica", "Subnet group", "Backup", "Multi-AZ"],
+  sns: ["Topic", "Subscriber", "Fan-out", "Filter", "DLQ"],
 };
 
 export function getDiagramLabelsForService(serviceId: string): string[] {

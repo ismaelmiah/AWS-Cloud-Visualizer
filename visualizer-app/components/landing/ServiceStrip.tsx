@@ -18,9 +18,8 @@ export function ServiceStrip() {
         <h2 className="mt-2 text-center font-sans text-xl font-semibold tracking-tight text-white sm:text-2xl">
           Exam topic map & exploration
         </h2>
-        <p className="mx-auto mt-2 max-w-2xl text-center text-sm text-zinc-400 sm:text-base">
-          Each tile links to a topic workspace (diagram + quiz). Progress reflects your best quiz score on that
-          topic, or 100% if you marked it complete—stored when you are signed in.
+        <p className="mx-auto mt-2 max-w-2xl text-center text-sm text-zinc-400">
+          Tiles open a visual workspace + quiz. Signed-in users: progress follows your best score per topic.
         </p>
         <p className="sr-only">
           Grid of exam topics with icons, short hints, exploration percentage, and links to detailed preparation

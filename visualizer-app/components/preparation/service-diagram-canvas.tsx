@@ -138,11 +138,10 @@ export function ServiceDiagramCanvas({ examId, serviceId }: Props) {
   };
 
   return (
-    <section className="rounded-2xl border border-white/10 bg-zinc-900/50 p-4 sm:p-5">
+    <section className="rounded-2xl border border-white/10 bg-zinc-900/50 p-4 pr-20 pt-3 sm:p-5 sm:pr-28">
       <h2 className="font-sans text-lg font-semibold text-white">Architecture canvas</h2>
-      <p className="mt-1 text-sm text-zinc-400">
-        Drag chips freely to sketch how pieces fit. Layout is saved in this browser only (
-        <span className="font-mono text-xs text-zinc-500">localStorage</span>).
+      <p className="mt-1 text-xs text-zinc-500">
+        Drag chips — layout persists in <span className="font-mono text-zinc-600">localStorage</span> only.
       </p>
       <div
         ref={containerRef}

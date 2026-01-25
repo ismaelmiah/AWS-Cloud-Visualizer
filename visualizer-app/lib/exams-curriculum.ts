@@ -6,6 +6,8 @@
  * per-service depth uses What / How / Why / Niche chips on the grid.
  */
 
+import type { SaaC03DomainId } from "@/lib/saa-c03-domains";
+
 export type CertificationProgramTier =
   | "foundational"
   | "associate"
@@ -21,6 +23,8 @@ export type ExamServiceEntry = {
   iconFile: string;
   hint: string;
   tier: KnowledgeTier;
+  /** SAA-C03 exam domains; index 0 is the primary domain for hub grouping. */
+  saaDomains?: SaaC03DomainId[];
 };
 
 export type ExamDefinition = {
@@ -127,87 +131,125 @@ const EXAMS: Record<string, ExamDefinition> = {
     simpleGoalSummary: "Understand the How",
     active: true,
     services: [
-      { serviceId: "iam", label: "IAM", iconFile: "iam.svg", hint: "Identity & access", tier: "why" },
-      { serviceId: "ec2", label: "EC2", iconFile: "ec2.svg", hint: "Compute instances", tier: "how" },
       {
-        serviceId: "elb-asg",
-        label: "ELB & Auto Scaling",
-        iconFile: "ec2.svg",
-        hint: "Load balancing & ASG",
-        tier: "how",
-      },
-      {
-        serviceId: "rds-aurora-elasticache",
-        label: "RDS, Aurora & ElastiCache",
-        iconFile: "rds.svg",
-        hint: "SQL, cache & replicas",
-        tier: "how",
-      },
-      { serviceId: "route53", label: "Route 53", iconFile: "route53.svg", hint: "DNS & routing", tier: "how" },
-      { serviceId: "s3", label: "S3", iconFile: "s3.svg", hint: "Object storage", tier: "how" },
-      {
-        serviceId: "cloudfront-global-accelerator",
-        label: "CloudFront & Global Accelerator",
-        iconFile: "cloudfront.svg",
-        hint: "Edge & anycast entry",
+        serviceId: "iam",
+        label: "IAM",
+        iconFile: "iam.svg",
+        hint: "Least privilege, roles, policies",
         tier: "why",
+        saaDomains: ["secure"],
       },
       {
-        serviceId: "messaging-streaming",
-        label: "SQS, SNS, Kinesis & MQ",
-        iconFile: "sqs.svg",
-        hint: "Queues, events & streams",
-        tier: "how",
-      },
-      {
-        serviceId: "containers-eks",
-        label: "ECS, Fargate, ECR & EKS",
-        iconFile: "ec2.svg",
-        hint: "Containers & orchestration",
-        tier: "how",
-      },
-      {
-        serviceId: "databases",
-        label: "Databases on AWS",
-        iconFile: "dynamodb.svg",
-        hint: "Choosing SQL vs NoSQL",
-        tier: "why",
-      },
-      {
-        serviceId: "data-analytics",
-        label: "Data & analytics",
-        iconFile: "s3.svg",
-        hint: "Lakes, warehouses & query",
-        tier: "how",
-      },
-      {
-        serviceId: "machine-learning",
-        label: "Machine learning",
-        iconFile: "lambda.svg",
-        hint: "Managed ML building blocks",
-        tier: "what",
-      },
-      {
-        serviceId: "observability-governance",
-        label: "CloudWatch, CloudTrail & Config",
-        iconFile: "sns.svg",
-        hint: "Metrics, audit & compliance",
-        tier: "how",
-      },
-      {
-        serviceId: "security-edge",
-        label: "KMS, SSM, Shield & WAF",
+        serviceId: "kms",
+        label: "KMS",
         iconFile: "kms.svg",
-        hint: "Secrets, DDoS & web ACLs",
+        hint: "Keys, encryption at rest",
         tier: "why",
+        saaDomains: ["secure"],
       },
-      { serviceId: "vpc", label: "VPC", iconFile: "vpc.svg", hint: "Isolation & connectivity", tier: "how" },
       {
-        serviceId: "dr-migrations",
-        label: "DR & migrations",
+        serviceId: "vpc",
+        label: "VPC",
+        iconFile: "vpc.svg",
+        hint: "Subnets, routing, endpoints",
+        tier: "how",
+        saaDomains: ["secure", "resilient"],
+      },
+      {
+        serviceId: "ec2",
+        label: "EC2",
+        iconFile: "ec2.svg",
+        hint: "Instances, ASG, purchase models",
+        tier: "how",
+        saaDomains: ["resilient", "cost-optimized", "high-performing"],
+      },
+      {
+        serviceId: "lambda",
+        label: "Lambda",
+        iconFile: "lambda.svg",
+        hint: "Event-driven serverless compute",
+        tier: "how",
+        saaDomains: ["cost-optimized", "high-performing"],
+      },
+      {
+        serviceId: "ecs-fargate",
+        label: "ECS & Fargate",
+        iconFile: "ec2.svg",
+        hint: "Containers vs. bare EC2 ops",
+        tier: "how",
+        saaDomains: ["high-performing", "cost-optimized"],
+      },
+      {
+        serviceId: "s3",
+        label: "S3",
+        iconFile: "s3.svg",
+        hint: "Classes, policies, Object Lock",
+        tier: "how",
+        saaDomains: ["cost-optimized", "secure"],
+      },
+      {
+        serviceId: "ebs",
+        label: "EBS",
+        iconFile: "ec2.svg",
+        hint: "Volume types, snapshots, DR",
+        tier: "how",
+        saaDomains: ["cost-optimized", "resilient"],
+      },
+      {
+        serviceId: "efs",
+        label: "EFS",
+        iconFile: "vpc.svg",
+        hint: "Shared Linux file storage",
+        tier: "how",
+        saaDomains: ["high-performing"],
+      },
+      {
+        serviceId: "rds-aurora",
+        label: "RDS & Aurora",
+        iconFile: "rds.svg",
+        hint: "Multi-AZ, replicas, failover",
+        tier: "how",
+        saaDomains: ["resilient", "high-performing"],
+      },
+      {
+        serviceId: "dynamodb",
+        label: "DynamoDB",
+        iconFile: "dynamodb.svg",
+        hint: "Keys, global tables, capacity",
+        tier: "how",
+        saaDomains: ["high-performing", "resilient"],
+      },
+      {
+        serviceId: "route53",
+        label: "Route 53",
+        iconFile: "route53.svg",
+        hint: "Routing policies, health checks",
+        tier: "how",
+        saaDomains: ["resilient", "high-performing"],
+      },
+      {
+        serviceId: "cloudfront",
+        label: "CloudFront",
         iconFile: "cloudfront.svg",
-        hint: "RTO/RPO & move to cloud",
+        hint: "CDN, edge, WAF integration",
         tier: "why",
+        saaDomains: ["high-performing", "secure"],
+      },
+      {
+        serviceId: "sqs",
+        label: "SQS",
+        iconFile: "sqs.svg",
+        hint: "Queues, decoupling, DLQ",
+        tier: "how",
+        saaDomains: ["resilient", "cost-optimized"],
+      },
+      {
+        serviceId: "cloudwatch",
+        label: "CloudWatch",
+        iconFile: "sns.svg",
+        hint: "Metrics, logs, alarms",
+        tier: "how",
+        saaDomains: ["resilient", "cost-optimized"],
       },
     ],
   },
@@ -401,6 +443,8 @@ export function listExams(): ExamDefinition[] {
 export function getExam(examId: string): ExamDefinition | null {
   return EXAMS[examId] ?? null;
 }
+
+export const AWS_SOLUTIONS_ARCHITECT_ASSOCIATE_ID = "aws-solutions-architect-associate";
 
 export const tierSummary: Record<
   KnowledgeTier,
