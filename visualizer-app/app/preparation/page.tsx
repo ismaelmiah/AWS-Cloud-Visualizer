@@ -20,6 +20,21 @@ export default function PreparationHubPage() {
         for, what kind of thinking the exam rewards, and a curated service map with depth chips.
       </p>
 
+      <div className="mt-8 rounded-2xl border border-orange-500/25 bg-zinc-900/60 p-5 shadow-md shadow-black/20">
+        <h2 className="font-sans text-lg font-semibold text-white">Architecture lab</h2>
+        <p className="mt-1 text-sm text-zinc-400">
+          Practice core services on a free-form canvas, connect them into flows, export PDF or PNG, and copy
+          a shareable link. Named designs and diagrams are stored in Supabase per user; the link can also
+          embed a compressed copy for sharing.
+        </p>
+        <Link
+          href="/preparation/architect"
+          className="mt-4 inline-flex items-center justify-center rounded-full border border-orange-500/50 bg-orange-500/10 px-5 py-2.5 text-sm font-semibold text-orange-200 transition hover:bg-orange-500/20"
+        >
+          Open architecture lab
+        </Link>
+      </div>
+
       <ul className="mt-10 grid gap-6 sm:grid-cols-2">
         {exams.map((exam) => {
           const tier = programTierMeta[exam.certificationTier];

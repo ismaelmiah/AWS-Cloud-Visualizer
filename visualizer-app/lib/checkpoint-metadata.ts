@@ -1,6 +1,6 @@
 /**
- * Checkpoint progress stored in Clerk `privateMetadata` under `checkpointProgress`.
- * Keep payloads small (Clerk metadata limits ~8KB per object).
+ * Checkpoint progress shape. Persisted in Supabase (`user_checkpoint_progress.checkpoint_data`).
+ * Legacy: was also in Clerk `privateMetadata` (optional one-time read when migrating).
  */
 
 export const CHECKPOINT_METADATA_VERSION = "v1" as const;
@@ -25,7 +25,8 @@ export type CheckpointProgressRoot = {
   };
 };
 
-const MAX_JSON_BYTES = 7500;
+/** @deprecated — kept for reference; not used for Supabase persistence. */
+export const MAX_CLERK_PRIVATE_METADATA_BYTES = 7500;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -103,31 +104,27 @@ export function validateCheckpointIds(trackId: string, checkpointId: string): st
 }
 
 /** Merges one checkpoint update into existing privateMetadata; returns full privateMetadata to persist. */
-export function mergeCheckpointIntoPrivateMetadata(
-  existingPrivate: Record<string, unknown> | null | undefined,
+/** Applies a single checkpoint update; returns the next `CheckpointProgressRoot` for storage. */
+export function applyCheckpointUpdate(
+  current: CheckpointProgressRoot,
   input: MergeCheckpointInput
-): { privateMetadata?: Record<string, unknown>; error?: string } {
+): { next: CheckpointProgressRoot; error?: string } {
   const idErr = validateCheckpointIds(input.trackId, input.checkpointId);
-  if (idErr) return { error: idErr };
+  if (idErr) return { next: current, error: idErr };
 
   if (input.quizBestScore !== undefined) {
     const s = input.quizBestScore;
     if (!Number.isFinite(s) || s < 0 || s > 100) {
-      return { error: "quizBestScore must be between 0 and 100" };
+      return { next: current, error: "quizBestScore must be between 0 and 100" };
     }
   }
 
-  const parsed = parseCheckpointProgress(existingPrivate);
-  const base = existingPrivate && isRecord(existingPrivate) ? { ...existingPrivate } : {};
-  const { v1 } = parsed.checkpointProgress;
-
+  const { v1 } = current.checkpointProgress;
   const track = v1.tracks[input.trackId] ?? { checkpoints: {} };
   const prev = track.checkpoints[input.checkpointId];
   const now = new Date().toISOString();
 
-  const nextRecord: CheckpointRecord = {
-    updatedAt: now,
-  };
+  const nextRecord: CheckpointRecord = { updatedAt: now };
   if (typeof prev?.completed === "boolean" && input.completed === undefined) {
     nextRecord.completed = prev.completed;
   } else if (input.completed !== undefined) {
@@ -156,21 +153,9 @@ export function mergeCheckpointIntoPrivateMetadata(
     },
   };
 
-  const checkpointProgress: CheckpointProgressRoot["checkpointProgress"] = {
-    v1: { tracks: nextTracks },
+  return {
+    next: {
+      checkpointProgress: { v1: { tracks: nextTracks } },
+    },
   };
-
-  const privateMetadata = {
-    ...base,
-    checkpointProgress,
-  };
-
-  const size = new Blob([JSON.stringify(privateMetadata)]).size;
-  if (size > MAX_JSON_BYTES) {
-    return {
-      error: "Checkpoint data would exceed safe metadata size; shorten track or checkpoint ids",
-    };
-  }
-
-  return { privateMetadata };
 }

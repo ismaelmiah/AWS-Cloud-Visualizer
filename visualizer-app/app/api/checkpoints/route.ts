@@ -1,25 +1,30 @@
-import { auth, clerkClient } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { mergeCheckpointIntoPrivateMetadata, parseCheckpointProgress } from "@/lib/checkpoint-metadata";
+import {
+  applyAndSaveCheckpoint,
+  getCheckpointProgressClerkId,
+} from "@/lib/checkpoint-repository";
+import { isSupabaseConfigured } from "@/lib/supabase/service";
 
 function jsonError(message: string, status: number) {
   return NextResponse.json({ error: message }, { status });
 }
 
-/** Returns the signed-in user's checkpoint progress (from privateMetadata). */
+/** Returns the signed-in user's checkpoint progress (Supabase, with optional one-time Clerk migration). */
 export async function GET() {
   const { userId } = await auth();
   if (!userId) {
     return jsonError("Unauthorized", 401);
   }
 
-  const client = await clerkClient();
-  const user = await client.users.getUser(userId);
-  const pm = user.privateMetadata as Record<string, unknown> | undefined;
-
-  return NextResponse.json({
-    checkpointProgress: parseCheckpointProgress(pm).checkpointProgress,
-  });
+  try {
+    const root = await getCheckpointProgressClerkId(userId);
+    return NextResponse.json({
+      checkpointProgress: root.checkpointProgress,
+    });
+  } catch (e) {
+    return jsonError(e instanceof Error ? e.message : "Load failed", 500);
+  }
 }
 
 type PatchBody = {
@@ -29,11 +34,18 @@ type PatchBody = {
   quizBestScore?: unknown;
 };
 
-/** Merges a single checkpoint update into Clerk privateMetadata. */
+/** Merges a single checkpoint update into Supabase. */
 export async function PATCH(request: Request) {
   const { userId } = await auth();
   if (!userId) {
     return jsonError("Unauthorized", 401);
+  }
+
+  if (!isSupabaseConfigured()) {
+    return jsonError(
+      "Progress storage is not configured. Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
+      503
+    );
   }
 
   let body: PatchBody;
@@ -60,28 +72,18 @@ export async function PATCH(request: Request) {
     return jsonError("quizBestScore must be a number when provided", 400);
   }
 
-  const client = await clerkClient();
-  const user = await client.users.getUser(userId);
-  const existingPrivate = user.privateMetadata as Record<string, unknown> | undefined;
-
-  const merged = mergeCheckpointIntoPrivateMetadata(existingPrivate, {
-    trackId,
-    checkpointId,
-    completed,
-    quizBestScore,
-  });
-
-  if (merged.error || !merged.privateMetadata) {
-    return jsonError(merged.error ?? "Merge failed", 400);
+  try {
+    const next = await applyAndSaveCheckpoint(userId, {
+      trackId,
+      checkpointId,
+      completed,
+      quizBestScore,
+    });
+    return NextResponse.json({
+      ok: true,
+      checkpointProgress: next.checkpointProgress,
+    });
+  } catch (e) {
+    return jsonError(e instanceof Error ? e.message : "Update failed", 400);
   }
-
-  await client.users.updateUser(userId, { privateMetadata: merged.privateMetadata });
-
-  const updated = await client.users.getUser(userId);
-  const pm = updated.privateMetadata as Record<string, unknown> | undefined;
-
-  return NextResponse.json({
-    ok: true,
-    checkpointProgress: parseCheckpointProgress(pm).checkpointProgress,
-  });
 }

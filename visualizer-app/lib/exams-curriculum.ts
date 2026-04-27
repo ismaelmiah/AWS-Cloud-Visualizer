@@ -1,6 +1,6 @@
 /**
  * Per-exam curriculum for preparation hub + service grid.
- * `id` matches checkpoint `trackId` in Clerk privateMetadata (see checkpoint-metadata).
+ * `id` matches checkpoint `trackId` in stored progress (see Supabase + checkpoint-metadata).
  *
  * Program tiers (Foundational → Specialty) align with AWS certification levels;
  * per-service depth uses What / How / Why / Niche chips on the grid.
