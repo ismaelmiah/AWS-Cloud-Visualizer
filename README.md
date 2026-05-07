@@ -1,5 +1,5 @@
 # AWS-Cloud-Practitioner
-This is a notebook to Preparing for the aws-cloud-practitioner exam
+> A comprehensive AWS exam preparation tool built with Next.js and TypeScript. It features an interactive drag-and-drop cloud architecture visualizer with PDF/screenshot export capabilities and a dynamic, service-specific quiz engine tailored to different AWS certification paths.
 
 # Indexs
 
